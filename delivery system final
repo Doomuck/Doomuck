@@ -1,0 +1,679 @@
+#include <LiquidCrystal_I2C.h>
+#include <Key.h>
+#include <Keypad.h>
+#include <Servo.h>
+
+Servo servo;
+Servo servo1;
+LiquidCrystal_I2C lcd(0x27,16,2);
+void resetFunc()
+{
+  asm volatile ("jmp 0");
+}
+
+//끌어올리는 모터1
+int ENA=2;
+int IN1=3;
+int IN2=4;
+int ENB=5;
+int IN3=6;
+int IN4=7;
+
+//1층 모터
+int ENA1=22;
+int IN5=24;
+int IN6=26;
+int ENB1=28;
+int IN7=30;
+int IN8=32;
+
+//끌어올리는 모터2
+int ENA2=23;
+int IN9=25;
+int IN10=27;
+int ENB2=29;
+int IN11=31;
+int IN12=33;
+
+//엘리베이터 모터
+int ENA3=34;
+int IN13=36;
+int IN14=38;
+int ENB3=40;
+int IN15=42;
+int IN16=44;
+
+//마그네틱 센서
+int DigitalPin = A0;
+int DigitalPin1 = A9;
+int gValue = 0;
+int gValue1 = 0;
+int i;
+
+const byte ROWS = 4;
+const byte COLS = 4;
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+byte rowPins[ROWS] = {A8, A7, A6, A5};
+byte colPins[COLS] = {A4, A3, A2, A1};
+
+Keypad keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+String password = "1234";
+String password1 = "5678";
+String userInput = "";
+int count = 0;
+int value = 0;
+
+void setup()
+{
+  lcd.init();
+  lcd.backlight();
+  pinMode(DigitalPin, INPUT);
+  Serial.begin(9600);
+  servo.attach(8);
+  servo.write(80);
+  servo1.attach(9);
+  servo1.write(80);
+  pinMode(ENA,OUTPUT);
+  pinMode(ENB,OUTPUT);
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+  pinMode(IN3,OUTPUT);
+  pinMode(IN4,OUTPUT);
+  digitalWrite(ENA,HIGH);
+  digitalWrite(ENB,HIGH);
+  
+  pinMode(ENA1,OUTPUT);
+  pinMode(ENB1,OUTPUT);
+  pinMode(IN5,OUTPUT);
+  pinMode(IN6,OUTPUT);
+  pinMode(IN7,OUTPUT);
+  pinMode(IN8,OUTPUT);
+  digitalWrite(ENA1,HIGH);
+  digitalWrite(ENB1,HIGH);
+  
+  pinMode(ENA2,OUTPUT);
+  pinMode(ENB2,OUTPUT);
+  pinMode(IN9,OUTPUT);
+  pinMode(IN10,OUTPUT);
+  pinMode(IN11,OUTPUT);
+  pinMode(IN12,OUTPUT);
+  digitalWrite(ENA2,HIGH);
+  digitalWrite(ENB2,HIGH);
+
+  pinMode(ENA3,OUTPUT);
+  pinMode(ENB3,OUTPUT);
+  pinMode(IN13,OUTPUT);
+  pinMode(IN14,OUTPUT);
+  pinMode(IN15,OUTPUT);
+  pinMode(IN16,OUTPUT);
+  digitalWrite(ENA3,HIGH);
+  digitalWrite(ENB3,HIGH);
+
+  lcd.setCursor(0,0);
+  lcd.println("Press A to keep ");
+  lcd.setCursor(0,1);
+  lcd.println("Press B to find ");
+  Serial.println("Press A to keep, press B to find");
+}
+
+void loop()
+{
+  char key = keypad.getKey();
+  if(key){
+    lcd.setCursor(0,1);
+    userInput += key;
+    count +=1;
+    Serial.println(key);
+    for(int i = 0; i < count; i++)
+    {
+      lcd.print("*");
+    }
+    if(count == 1)
+    {
+      if((userInput=="A")||(userInput=="B"))
+      {
+        lcd.setCursor(0,0);
+        lcd.println("   Press Num    ");
+        lcd.setCursor(0,1);
+        lcd.println("____------------"); 
+      }
+    }
+       
+    if(count == 4)
+    {
+      count = 0;
+      if(userInput == "A201")
+      {
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.println("machine working ");
+          userInput="";
+          for(i=0;i<105;i++)
+          {
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<105;i++)
+          {
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<78;i++)
+          {
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+          }
+          delay(100);
+          for(i=0;i<90;i++)
+          {
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+          }
+          for(i=0;i<80;i++)
+          {
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<78;i++)
+          {
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+          }
+          delay(100);
+          userInput = "";
+               
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.println("delivery finish ");
+          delay(2000);
+          resetFunc();
+        }
+        else if(userInput == "A301")
+        {
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.println("machine working ");
+          for(i=0;i<98;i++)
+          {
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<95;i++)
+          {
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+
+            digitalWrite(IN5,HIGH);
+            digitalWrite(IN6,LOW);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,LOW);
+            digitalWrite(IN8,HIGH);
+            delay(5);
+
+            digitalWrite(IN5,LOW);
+            digitalWrite(IN6,HIGH);
+            digitalWrite(IN7,HIGH);
+            digitalWrite(IN8,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<140;i++)
+          {
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+          }
+          delay(100);
+          for(i=0;i<120;i++)
+          {
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+          }
+          for(i=0;i<120;i++)
+          {
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+
+            digitalWrite(IN13,LOW);
+            digitalWrite(IN14,HIGH);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,LOW);
+            digitalWrite(IN16,HIGH);
+            delay(5);
+
+            digitalWrite(IN13,HIGH);
+            digitalWrite(IN14,LOW);
+            digitalWrite(IN15,HIGH);
+            digitalWrite(IN16,LOW);
+            delay(5);
+          }
+          delay(100);
+          for(i=0;i<133;i++)
+          {
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,LOW);
+            digitalWrite(IN10,HIGH);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,HIGH);
+            digitalWrite(IN2,LOW);
+            digitalWrite(IN3,LOW);
+            digitalWrite(IN4,HIGH);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,LOW);
+            digitalWrite(IN12,HIGH);
+            delay(3);
+
+            digitalWrite(IN1,LOW);
+            digitalWrite(IN2,HIGH);
+            digitalWrite(IN3,HIGH);
+            digitalWrite(IN4,LOW);
+            delay(3);
+
+            digitalWrite(IN9,HIGH);
+            digitalWrite(IN10,LOW);
+            digitalWrite(IN11,HIGH);
+            digitalWrite(IN12,LOW);
+            delay(3);
+          }
+          userInput = "";
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.println("delivery finish");
+          delay(2000);
+          resetFunc();
+        }
+        else if(userInput == "B201")
+        {
+          lcd.clear();
+          count = 0;
+          lcd.setCursor(0,0);
+          lcd.println(" press password ");
+          lcd.setCursor(0,1);
+          lcd.println("____------------");
+          userInput=="";
+        }
+         else if(userInput == password)
+          {
+            lcd.setCursor(0,0);
+            lcd.println("correct password");
+            delay(1000);
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.println(" door is opened ");  
+            servo.write(0);
+            gValue = 1;
+            delay(2000);
+            lcd.setCursor(0,1);
+            lcd.println(" close door pls "); 
+            for(i=0;i<1000;i++)
+            {
+              gValue = digitalRead(DigitalPin);
+              Serial.println(gValue);
+              delay(500);
+              if(gValue == 0)
+              {
+                servo.write(80);
+                lcd.clear();
+                lcd.setCursor(0,0);
+                lcd.println(" door is closed ");
+                delay(2000);
+                resetFunc();
+              }    
+            }
+          }
+      else if(userInput == "B301")
+        {
+          count = 0;
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.println(" press password ");
+          lcd.setCursor(0,1);
+          lcd.println("____------------");
+          userInput=="";
+        }
+         else if(userInput == password1)
+          {
+            lcd.setCursor(1,0);
+            lcd.println("correct password");
+            delay(1000);
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.println(" door is opened ");  
+            servo1.write(0);
+            gValue1 = 1;
+            delay(2000);
+            lcd.setCursor(0,1);
+            lcd.println(" close door pls "); 
+            for(i=0;i<1000;i++)
+            {
+              gValue1 = digitalRead(DigitalPin1);
+              Serial.println(gValue1);
+              delay(500);
+              if(gValue1 == 0)
+              {
+                servo1.write(80);
+                lcd.clear();
+                lcd.setCursor(1,0);
+                lcd.println(" door is closed ");
+                delay(2000);
+                resetFunc();
+              }    
+            }
+          }
+          else
+          {
+            resetFunc();
+          }
+          userInput="";
+        }
+  }
+}
